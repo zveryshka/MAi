@@ -12,7 +12,11 @@ body{
 
 main{
     flex-grow: 1;
-
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
 }
 
 img{
@@ -34,4 +38,21 @@ footer{
     color: white;
     text-align: center;
     padding: 1rem;
+}
+#game{
+    border: 1px solid black;
+    box-shadow: 0 0 5px rgba(0,0,0,0.332);
+}
+
+#startBtn{
+    padding: 0.3rem 1rem;
+    border-radius: 2rem;
+    font-family: sans-serif;
+    box-shadow: 0 0 5px rgba(0,0,0,0.332);
+    
+}
+
+#startBtn:hover{
+    background-color: rgba(0,0,0,0.132);
+    cursor: pointer;
 }
