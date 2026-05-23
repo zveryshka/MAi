@@ -15,6 +15,7 @@ canvas.addEventListener("mousemove", (e)=> {
     const rect = canvas.getBoundingClientRect()
     const y = e.clientY - rect.top
     myY = y
+    socket.emit("move", y)
 })
 
 socket.on("init", (data)=>{
@@ -27,10 +28,11 @@ function draw(){
     for(let id in players){
         let p = players[id]
         
+        
     
     ctx.fillRect(
-        p.side == "left" ? 10 : 580,
-        myY,
+        p.sides == "left" ? 10 : 580,
+        p.y,
         10,
         100
     )
@@ -42,5 +44,6 @@ function draw(){
 
 socket.on("state", state => {
     ball = state.ball
+    players = state.players
     draw()
 })

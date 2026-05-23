@@ -36,7 +36,7 @@ io.on("connection", (socket)=>{
     )
 
     if(Object.keys(players).length < 2){
-        const takenSides = Object.values(players).map(p => p.side)
+        const takenSides = Object.values(players).map(p => p.sides)
         const freeSide = sides.find(s => !takenSides.includes(s))
 
 
@@ -51,19 +51,33 @@ io.on("connection", (socket)=>{
         players
     })
 
+    socket.on("move", (y)=>{
+        if(players[socket.id]){
+            players[socket.id].y = y
+        }
+            
+    })
+
     socket.on("start", ()=> {
         isPlaying = true;
 
         ball.x = 300
         ball.y = 200
+
         ball.vx = 4 * (Math.random() > 0.5 ? 1: -1)
         ball.vy = 3 * (Math.random() > 0.5 ? 1: -1)
+
+
+    })
+
+    socket.on("disconnect", ()=> {
+        delete players[socket.id]
     })
 })
 
 setInterval(()=>{
     if(!isPlaying) {
-        io.emit("state", {ball, isPlaying})
+        io.emit("state", {ball, isPlaying, players})
         return
     }
 
@@ -71,12 +85,31 @@ setInterval(()=>{
     ball.y += ball.vy
 
     if(ball.y <= 0 || ball.y >= 400) ball.vy *= -1
-    if(ball.x <= 0 || ball.x >= 600) ball.vx *= -1
+    // if(ball.x <= 0 || ball.x >= 600) ball.vx *= -1
 
     ball.vx += ball.vx * 0.001
     ball.vy += ball.vy * 0.001
 
-    io.emit("state", {ball, isPlaying})
+    if(ball.vy > 7) ball.vy = 7
+    if(ball.vx > 7) ball.vx = 7
+console.log(ball)
+    for (let id in players){
+        let p = players[id]
+        if(p.sides == "left" && ball.x < 20 && ball.x > 10){
+            if(ball.y > p.y && ball.y < p.y + 100){
+                ball.vx *= -1
+            }
+        }
+
+
+        if(p.sides == "right" && ball.x > 580 && ball.x < 590){
+            if(ball.y > p.y && ball.y < p.y + 100){
+                ball.vx *= -1
+            }
+        }
+    }
+
+    io.emit("state", {ball, isPlaying, players})
 }, 1000/60)
 
 server.listen(3000, ()=> console.log("server on!"))
